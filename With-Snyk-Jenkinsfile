@@ -37,7 +37,7 @@ pipeline {
                         
 
                         // Check if snyk.exe exists in C:\ProgramData or local folder
-                        def snykInstalled = bat(script: '''
+                         snykInstalled = bat(script: '''
                         if exist C:\\ProgramData\\snyk.exe (   // Adjust if needed
                             exit 0
                         ) else if exist .\\snyk.exe (
