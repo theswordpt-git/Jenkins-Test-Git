@@ -44,19 +44,19 @@ pipeline {
                         if (os == 'Linux') {
                             echo 'Linux detected. Installing Snyk CLI for Linux...'
                             sh '''
-                                curl -sL https://github.com/snyk/snyk/releases/latest/download/snyk-linux-amd64 -o /usr/local/bin/snyk
+                                curl -sL https://downloads.snyk.io/cli/stable/snyk-linux -o /usr/local/bin/snyk
                                 chmod +x /usr/local/bin/snyk
                             '''
                         } else if (os == 'Darwin') {
                             echo 'macOS detected. Installing Snyk CLI for macOS...'
                             sh '''
-                                curl -sL https://github.com/snyk/snyk/releases/latest/download/snyk-darwin-amd64 -o /usr/local/bin/snyk
+                                curl -sL https://downloads.snyk.io/cli/stable/snyk-macos -o /usr/local/bin/snyk
                                 chmod +x /usr/local/bin/snyk
                             '''
                         } else if (os == 'Windows') {
                             echo 'Windows detected. Installing Snyk CLI for Windows...'
                             bat '''
-                                curl -sL https://github.com/snyk/snyk/releases/latest/download/snyk-win.exe -o C:\\ProgramData\\snyk.exe
+                                curl -sL https://downloads.snyk.io/cli/stable/snyk-win.exe -o C:\\ProgramData\\snyk.exe
                             '''
                         } else {
                             error "Unsupported OS: ${os}"
