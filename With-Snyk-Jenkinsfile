@@ -44,19 +44,19 @@ pipeline {
                         if (os == 'Linux') {
                             echo 'Linux detected. Installing Snyk CLI for Linux...'
                             sh '''
-                                curl -sL https://downloads.snyk.io/cli/stable/snyk-linux -o /usr/local/bin/snyk
-                                chmod +x /usr/local/bin/snyk
+                                curl -sL https://downloads.snyk.io/cli/stable/snyk-linux -o ./snyk
+                                chmod +x ./snyk
                             '''
                         } else if (os == 'Darwin') {
                             echo 'macOS detected. Installing Snyk CLI for macOS...'
                             sh '''
-                                curl -sL https://downloads.snyk.io/cli/stable/snyk-macos -o /usr/local/bin/snyk
-                                chmod +x /usr/local/bin/snyk
+                                curl -sL https://downloads.snyk.io/cli/stable/snyk-macos -o ./snyk
+                                chmod +x ./snyk
                             '''
                         } else if (os == 'Windows') {
                             echo 'Windows detected. Installing Snyk CLI for Windows...'
                             bat '''
-                                curl -sL https://downloads.snyk.io/cli/stable/snyk-win.exe -o C:\\ProgramData\\snyk.exe
+                                curl -sL https://downloads.snyk.io/cli/stable/snyk-win.exe -o snyk.exe
                             '''
                         } else {
                             error "Unsupported OS: ${os}"
@@ -73,8 +73,8 @@ pipeline {
                 withCredentials([string(credentialsId: 'snyk-api-token-string', variable: 'SNYK_TOKEN')]) {
                     // Use the general snyk tool instead of snyk-linux
                     sh '''
-                        snyk auth $SNYK_TOKEN
-                        snyk iac test --org=$SNYK_ORG --severity-threshold=high || true
+                        ./snyk auth $SNYK_TOKEN
+                        ./snyk iac test --org=$SNYK_ORG --severity-threshold=high || true
                     '''
                 }
             }
