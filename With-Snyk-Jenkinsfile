@@ -27,13 +27,25 @@ pipeline {
                         os = sh(script: 'uname -s', returnStdout: true).trim()
 
                         // Check if Snyk is already installed on Linux/macOS
-                        snykInstalled = sh(script: 'which snyk', returnStatus: true) == 0
+                        snykInstalled = sh(script: 'which snyk || [ -f ./snyk ]', returnStatus: true) == 0
                     } else {
                         // Windows
                         os = 'Windows'
                         
                         // Check if Snyk is already installed on Windows
-                        snykInstalled = fileExists('C:\\ProgramData\\snyk.exe') // Adjust if needed
+                        //snykInstalled = fileExists('C:\\ProgramData\\snyk.exe') // Adjust if needed
+                        
+
+                        // Check if snyk.exe exists in C:\ProgramData or local folder
+                        def snykInstalled = bat(script: '''
+                        if exist C:\\ProgramData\\snyk.exe (   // Adjust if needed
+                            exit 0
+                        ) else if exist .\\snyk.exe (
+                            exit 0
+                        ) else (
+                            exit 1
+                        )
+                    ''', returnStatus: true) == 0
                     }
 
                     // If Snyk is not installed, proceed to install
