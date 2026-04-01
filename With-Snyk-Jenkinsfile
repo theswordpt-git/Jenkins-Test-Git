@@ -14,6 +14,60 @@ pipeline {
             }
         }
 
+        stage('Install Snyk CLI if Not Installed') {
+            steps {
+                script {
+                    // Detect the platform (Linux, macOS, or Windows)
+                    def os = ''
+                    def snykInstalled = false
+
+                    // Detect platform and check if Snyk is installed
+                    if (isUnix()) {
+                        // Linux or macOS
+                        os = sh(script: 'uname -s', returnStdout: true).trim()
+
+                        // Check if Snyk is already installed on Linux/macOS
+                        snykInstalled = sh(script: 'which snyk', returnStatus: true) == 0
+                    } else {
+                        // Windows
+                        os = 'Windows'
+                        
+                        // Check if Snyk is already installed on Windows
+                        snykInstalled = fileExists('C:\\ProgramData\\snyk.exe') // Adjust if needed
+                    }
+
+                    // If Snyk is not installed, proceed to install
+                    if (!snykInstalled) {
+                        echo "Snyk CLI is not installed. Installing..."
+
+                        // Install Snyk based on platform
+                        if (os == 'Linux') {
+                            echo 'Linux detected. Installing Snyk CLI for Linux...'
+                            sh '''
+                                curl -sL https://github.com/snyk/snyk/releases/latest/download/snyk-linux-amd64 -o /usr/local/bin/snyk
+                                chmod +x /usr/local/bin/snyk
+                            '''
+                        } else if (os == 'Darwin') {
+                            echo 'macOS detected. Installing Snyk CLI for macOS...'
+                            sh '''
+                                curl -sL https://github.com/snyk/snyk/releases/latest/download/snyk-darwin-amd64 -o /usr/local/bin/snyk
+                                chmod +x /usr/local/bin/snyk
+                            '''
+                        } else if (os == 'Windows') {
+                            echo 'Windows detected. Installing Snyk CLI for Windows...'
+                            bat '''
+                                curl -sL https://github.com/snyk/snyk/releases/latest/download/snyk-win.exe -o C:\\ProgramData\\snyk.exe
+                            '''
+                        } else {
+                            error "Unsupported OS: ${os}"
+                        }
+                    } else {
+                        echo "Snyk CLI is already installed."
+                    }
+                }
+            }
+        }
+
         stage('Snyk IaC Scan Test') {
             steps {
                 withCredentials([string(credentialsId: 'snyk-api-token-string', variable: 'SNYK_TOKEN')]) {
